@@ -1,78 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Email Confirmed</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Email Confirmed</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: white;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
 
-        header {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
-            padding: 20px 40px;
-            background-color: white;
-        }
+    h1 {
+      font-size: 2rem;
+      color: #222;
+      margin-bottom: 0.5rem;
+    }
 
-        header img {
-            height: 40px;
-            width: auto;
-        }
+    p {
+      font-size: 1.1rem;
+      color: #555;
+      max-width: 400px;
+      line-height: 1.6;
+    }
 
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 40px;
-        }
+    .success {
+      color: #4caf50;
+      font-weight: bold;
+      margin-top: 20px;
+    }
 
-        h1 {
-            font-size: 2rem;
-            color: #222;
-            margin-bottom: 0.5rem;
-        }
-
-        p {
-            font-size: 1.1rem;
-            color: #555;
-            max-width: 400px;
-            line-height: 1.6;
-        }
-
-        footer {
-            text-align: center;
-            padding: 15px;
-            font-size: 0.9rem;
-            color: #888;
-        }
-    </style>
+    .error {
+      color: red;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
 </head>
-
 <body>
-    <header>
-        <img src="logo-no-text.png" alt="InternHub Logo" />
-    </header>
+  <h1>Email Verification</h1>
+  <p id="message">Verifying your email, please wait...</p>
 
-    <main>
-        <h1>Your email address has been successfully updated.</h1>
-        <p>We’ve successfully changed your email address. Make sure to use your new one next time you log in.</p>
-    </main>
+  <script>
+    const supabaseUrl = 'https://YOUR_PROJECT.supabase.co';
+    const supabaseKey = 'PUBLIC_ANON_KEY';
+    const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
 
-    <footer>
-        &copy; 2025 InternHub. All rights reserved.
-    </footer>
+    const urlParams = new URLSearchParams(window.location.search);
+    const access_token = urlParams.get('access_token'); // Supabase passes this after verification
+
+    async function verifyEmail() {
+      if (!access_token) {
+        document.getElementById('message').textContent =
+          "Invalid verification link.";
+        document.getElementById('message').className = 'error';
+        return;
+      }
+
+      const { error } = await supabase.auth.updateUser({}, { accessToken: access_token });
+
+      if (error) {
+        document.getElementById('message').textContent =
+          "Verification failed: " + error.message;
+        document.getElementById('message').className = 'error';
+      } else {
+        document.getElementById('message').textContent =
+          "Your email has been successfully confirmed!";
+        document.getElementById('message').className = 'success';
+      }
+    }
+
+    verifyEmail();
+  </script>
 </body>
-
 </html>
