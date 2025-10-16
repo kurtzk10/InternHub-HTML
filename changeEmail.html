@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Email Confirmed</title>
+  <title>Email Change Confirmation</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body {
@@ -46,8 +46,8 @@
   </style>
 </head>
 <body>
-  <h1>Email Verification</h1>
-  <p id="message">Verifying your email, please wait...</p>
+  <h1>Confirm Your New Email</h1>
+  <p id="message">Verifying your new email, please wait...</p>
 
   <script>
     const supabaseUrl = 'https://YOUR_PROJECT.supabase.co';
@@ -55,30 +55,31 @@
     const supabase = Supabase.createClient(supabaseUrl, supabaseKey);
 
     const urlParams = new URLSearchParams(window.location.search);
-    const access_token = urlParams.get('access_token'); // Supabase passes this after verification
+    const access_token = urlParams.get('access_token'); // Supabase passes this after email change
 
-    async function verifyEmail() {
+    async function confirmEmailChange() {
       if (!access_token) {
         document.getElementById('message').textContent =
-          "Invalid verification link.";
+          "Invalid confirmation link.";
         document.getElementById('message').className = 'error';
         return;
       }
 
+      // This marks the new email as verified
       const { error } = await supabase.auth.updateUser({}, { accessToken: access_token });
 
       if (error) {
         document.getElementById('message').textContent =
-          "Verification failed: " + error.message;
+          "Email change verification failed: " + error.message;
         document.getElementById('message').className = 'error';
       } else {
         document.getElementById('message').textContent =
-          "Your email has been successfully confirmed!";
+          "Your email has been successfully updated!";
         document.getElementById('message').className = 'success';
       }
     }
 
-    verifyEmail();
+    confirmEmailChange();
   </script>
 </body>
 </html>
